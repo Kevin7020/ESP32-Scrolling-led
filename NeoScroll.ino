@@ -44,19 +44,19 @@ void setup()
   matrix.setTextColor(colors[0]);
 }
 
-int x = matrix.width();
+int xAxis = matrix.width();
 int pass = 0;
 
 void loop()
 {
   matrix.fillScreen(0);
-  matrix.setCursor(x, 0);
+  matrix.setCursor(xAxis, 0);
   matrix.print(texto);
 
-  Serial.printf("FreeMem:%d %d \n", ESP.getFreeHeap(), x);
-  if ( --x < ledPxLength(texto.length()) )
+  Serial.printf("FreeMem:%d %d \n", ESP.getFreeHeap(), xAxis);
+  if ( --xAxis < ledPxLength(texto.length()) )
   {
-    x = matrix.width();
+    xAxis = matrix.width();
 
     if (++pass >= 8)
       pass = 0;
