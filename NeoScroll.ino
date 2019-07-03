@@ -12,8 +12,8 @@ const char *ssid = "YourSSIDHere";
 const char *password = "YourPSKHere";
 WebServer server(80);
 
-void handleNotFound() {
-  digitalWrite(led, 1);
+void handleNotFound()
+{
   String message = "File Not Found\n\n";
   message += "URI: ";
   message += server.uri();
@@ -23,15 +23,13 @@ void handleNotFound() {
   message += server.args();
   message += "\n";
 
-  for (uint8_t i = 0; i < server.args(); i++) {
+  for (uint8_t i = 0; i < server.args(); i++)
+  {
     message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
   }
 
   server.send(404, "text/plain", message);
-  digitalWrite(led, 0);
 }
-
-
 
 void setup()
 {
@@ -39,9 +37,9 @@ void setup()
   ledInit();
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  Serial.println("")
+  Serial.println("");
 
-      while (WiFi.status() != WL_CONNECTED)
+  while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
     Serial.print(".");
