@@ -5,9 +5,9 @@
 #define PIN 18
 
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, PIN,
-  NEO_MATRIX_BOTTOM  + NEO_MATRIX_RIGHT +
-  NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
-  NEO_GRB            + NEO_KHZ800);
+                                               NEO_MATRIX_BOTTOM + NEO_MATRIX_RIGHT +
+                                                   NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
+                                               NEO_GRB + NEO_KHZ800);
 
 const uint16_t colors[] = {
     matrix.Color(255, 0, 0),
@@ -30,7 +30,7 @@ int ledPxLength(int strLength)
    */
   //Serial.println(strLength);
   int lengthBuffer = strLength;
-  strLength = (((-1 * strLength)*5)+(-1 * lengthBuffer));
+  strLength = (((-1 * strLength) * 5) + (-1 * lengthBuffer));
   //Serial.println(strLength);
   return strLength;
 }
@@ -46,6 +46,8 @@ void setup()
 
 int xAxis = matrix.width();
 int pass = 0;
+long previousTime = 0;
+long interval = 35;
 
 void loop()
 {
@@ -54,14 +56,20 @@ void loop()
   matrix.print(texto);
 
   Serial.printf("FreeMem:%d %d \n", ESP.getFreeHeap(), xAxis);
-  if ( --xAxis < ledPxLength(texto.length()) )
-  {
-    xAxis = matrix.width();
 
-    if (++pass >= 8)
-      pass = 0;
-    matrix.setTextColor(colors[pass]);
+  unsigned long currentTime = millis();
+  if (currentTime - previousTime > interval)
+  {
+    previousTime = currentTime;
+    if (--xAxis < ledPxLength(texto.length()))
+    {
+      xAxis = matrix.width();
+
+      if (++pass >= 8)
+        pass = 0;
+      matrix.setTextColor(colors[pass]);
+    }
+    matrix.show();
+    //delay(35);
   }
-  matrix.show();
-  delay(35);
 }
