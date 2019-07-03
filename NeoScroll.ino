@@ -2,6 +2,10 @@
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 #include "ledBanner.h"
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <WebServer.h>
+#include <ESPmDNS.h>
 
 String texto = "HELLO WORLD!";
 const char *ssid = "YourSSIDHere";
