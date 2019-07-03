@@ -4,10 +4,7 @@
 
 #define PIN 18
 
-Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, PIN,
-                                               NEO_MATRIX_BOTTOM + NEO_MATRIX_RIGHT +
-                                                   NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
-                                               NEO_GRB + NEO_KHZ800);
+Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, PIN, NEO_MATRIX_BOTTOM + NEO_MATRIX_RIGHT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG, NEO_GRB + NEO_KHZ800);
 
 const uint16_t colors[] = {
     matrix.Color(255, 0, 0),
@@ -55,7 +52,7 @@ void loop()
   matrix.setCursor(xAxis, 0);
   matrix.print(texto);
 
-  Serial.printf("FreeMem:%d %d \n", ESP.getFreeHeap(), xAxis);
+  //Serial.printf("FreeMem:%d %d \n", ESP.getFreeHeap(), xAxis);
 
   unsigned long currentTime = millis();
   if (currentTime - previousTime > interval)
@@ -70,6 +67,5 @@ void loop()
       matrix.setTextColor(colors[pass]);
     }
     matrix.show();
-    //delay(35);
   }
 }
