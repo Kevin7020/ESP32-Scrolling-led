@@ -31,6 +31,29 @@ void handleNotFound()
   server.send(404, "text/plain", message);
 }
 
+void handleRoot()
+{
+  String message = "Root\n\n";
+  message += "URI: ";
+  message += server.uri();
+  message += "\nMethod: ";
+  message += (server.method() == HTTP_GET) ? "GET" : "POST";
+  message += "\nArguments: ";
+  message += server.args();
+  message += "\n";
+
+  for (uint8_t i = 0; i < server.args(); i++)
+  {
+    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+    if (server.argName(i) == "text")
+      text = server.arg(i);
+    if (server.argName(i) == "Bright")
+      ledMatrix.setBrightness((server.arg(i)).toInt());
+  }
+
+  server.send(200, "text/plain", message);
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -56,12 +79,13 @@ void setup()
   }
   //Server routes
   server.onNotFound(handleNotFound);
+  server.on("/", handleRoot);
   server.begin();
   Serial.println("HTTP server started");
 }
 
 void loop()
 {
-  ledBanner(texto);
+  ledBanner(text);
   server.handleClient();
 }
