@@ -4,10 +4,11 @@
 #include "ledBanner.h"
 #include <WiFi.h>
 #include <WiFiClient.h>
+#include <WiFiAP.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
 
-String texto = "HELLO WORLD!";
+String text = "HELLO WORLD!";
 const char *ssid = "YourSSIDHere";
 const char *password = "YourPSKHere";
 WebServer server(80);
@@ -58,25 +59,26 @@ void setup()
 {
   Serial.begin(115200);
   ledInit();
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  Serial.println("");
+  WiFi.softAP(ssid, password);
+  IPAddress myIP = WiFi.softAPIP();
+  Serial.print("AP IP address: ");
+  Serial.println(myIP);
 
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
+  // while (WiFi.status() != WL_CONNECTED)
+  // {
+  //   delay(500);
+  //   Serial.print(".");
+  // }
 
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-  if (MDNS.begin("esp32"))
-  {
-    Serial.println("MDNS responder started");
-  }
+  // Serial.println("");
+  // Serial.print("Connected to ");
+  // Serial.println(ssid);
+  // Serial.print("IP address: ");
+  // Serial.println(WiFi.localIP());
+  // if (MDNS.begin("esp32"))
+  // {
+  //   Serial.println("MDNS responder started");
+  // }
   //Server routes
   server.onNotFound(handleNotFound);
   server.on("/", handleRoot);
