@@ -2,92 +2,47 @@
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 #include "ledBanner.h"
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <WiFiAP.h>
-#include <WebServer.h>
-#include <ESPmDNS.h>
 
-String text = "HELLO WORLD!";
-const char *ssid = "YourSSIDHere";
-const char *password = "YourPSKHere";
-WebServer server(80);
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
 
-void handleNotFound()
-{
-  String message = "File Not Found\n\n";
-  message += "URI: ";
-  message += server.uri();
-  message += "\nMethod: ";
-  message += (server.method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += server.args();
-  message += "\n";
+#define SERVICE_UUID "659afb41-9a5b-468b-8b83-8956358ff09a"
+#define CHARACTERISTIC_UUID "f55d3b17-9dc1-4712-b301-e8d8bf50f28d"
 
-  for (uint8_t i = 0; i < server.args(); i++)
-  {
-    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-  }
+BLEServer *pServer = NULL;
+BLEService *pService = NULL;
+BLECharacteristic *pCharacteristic = NULL;
 
-  server.send(404, "text/plain", message);
-}
-
-void handleRoot()
-{
-  String message = "Root\n\n";
-  message += "URI: ";
-  message += server.uri();
-  message += "\nMethod: ";
-  message += (server.method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += server.args();
-  message += "\n";
-
-  for (uint8_t i = 0; i < server.args(); i++)
-  {
-    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-    if (server.argName(i) == "text")
-      text = server.arg(i);
-    if (server.argName(i) == "Bright")
-      ledMatrix.setBrightness((server.arg(i)).toInt());
-  }
-
-  server.send(200, "text/plain", message);
-}
+//String text = "HELLO WORLD!";
 
 void setup()
 {
   Serial.begin(115200);
   ledInit();
-  WiFi.softAP(ssid, password);
-  IPAddress myIP = WiFi.softAPIP();
-  Serial.print("AP IP address: ");
-  Serial.println(myIP);
 
-  // while (WiFi.status() != WL_CONNECTED)
-  // {
-  //   delay(500);
-  //   Serial.print(".");
-  // }
+  Serial.println("Starting BLE Service!");
+  BLEDevice::init("Led Matrix");
+  pServer = BLEDevice::createServer();
+  pService = pServer->createService(SERVICE_UUID);
+  pCharacteristic = pService->createCharacteristic( 
+    CHARACTERISTIC_UUID,
+    BLECharacteristic::PROPERTY_READ |
+    BLECharacteristic::PROPERTY_WRITE);
 
-  // Serial.println("");
-  // Serial.print("Connected to ");
-  // Serial.println(ssid);
-  // Serial.print("IP address: ");
-  // Serial.println(WiFi.localIP());
-  // if (MDNS.begin("esp32"))
-  // {
-  //   Serial.println("MDNS responder started");
-  // }
-  //Server routes
-  server.onNotFound(handleNotFound);
-  server.on("/", handleRoot);
-  server.begin();
-  Serial.println("HTTP server started");
+  pCharacteristic->setValue("HELLO WORLD!");
+  pService->start();
+  // BLEAdvertising *pAdvertising = pServer->getAdvertising();  // this still is working for backward compatibility
+  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->addServiceUUID(SERVICE_UUID);
+  pAdvertising->setScanResponse(true);
+  pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
+  pAdvertising->setMinPreferred(0x12);
+  BLEDevice::startAdvertising();
+  Serial.println("Characteristic defined!!");
 }
 
 void loop()
 {
-  ledBanner(text);
-  server.handleClient();
+  ledBanner(pCharacteristic->getValue().c_str());
 }
