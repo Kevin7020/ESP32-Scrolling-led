@@ -45,11 +45,12 @@ int pass = 0;
 long previousTime = 0;
 long interval = 35;
 
-void ledBanner(String txtToShow)
+void ledBanner(String txtToShow, String brightnss)
 {
     ledMatrix.fillScreen(0);
     ledMatrix.setCursor(xAxis, 0);
     ledMatrix.print(txtToShow);
+    ledMatrix.setBrightness(brightnss.toInt());
 
     //Serial.printf("FreeMem:%d %d \n", ESP.getFreeHeap(), xAxis);
 
