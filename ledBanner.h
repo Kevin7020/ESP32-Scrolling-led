@@ -69,4 +69,24 @@ void ledBanner(String txtToShow, String brightnss)
         ledMatrix.show();
     }
 }
+
+void ledSolidBanner(String txtToShow, String brightnss, String R, String G, String B)
+{
+    ledMatrix.fillScreen(0);
+    ledMatrix.setCursor(xAxis, 0);
+    ledMatrix.print(txtToShow);
+    ledMatrix.setBrightness(brightnss.toInt());
+
+    unsigned long currentTime = millis();
+    if (currentTime - previousTime > interval)
+    {
+        previousTime = currentTime;
+        if (--xAxis < ledPxLength(txtToShow.length()))
+        {
+            xAxis = ledMatrix.width();
+            ledMatrix.setTextColor(ledMatrix.Color(R.toInt(), G.toInt(), B.toInt()));
+        }
+        ledMatrix.show();
+    }
+}
 #endif
